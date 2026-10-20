@@ -1,30 +1,32 @@
-"""Main entry point for the Sales Management System (RISMS)."""
+"""Main entry point for the Sales Management System (RISMS).
+
+Run from the project folder:   python main.py
+"""
 
 import tkinter as tk
+
+from backend.reports import generate_all_reports
 from frontend.ui.app import SalesManagementApp
-from backend.reports import generate_text_low_stock_report, generate_graphical_sales_chart
+
 
 def main():
     """Initializes and runs the Sales Management application."""
     print("==================================================")
     print("     INITIALIZING SALES MANAGEMENT SYSTEM (RISMS) ")
     print("==================================================")
-    
-    # Step 1: Run background report and chart generators
+
+    # Step 1: generate the text reports and charts in the 'reports/' folder
     print("[1/2] Generating system reports & charts...")
     try:
-        generate_text_low_stock_report()
-        generate_graphical_sales_chart()
+        generate_all_reports()
         print("Reports generated successfully inside 'reports/' directory!")
-    except Exception as e:
-        print(f"Notice: Could not auto-generate background reports yet: {e}")
+    except Exception as exc:  # pylint: disable=broad-except
+        print(f"Notice: could not generate background reports yet: {exc}")
 
-    # Step 2: Launch the Graphical User Interface
+    # Step 2: launch the graphical user interface (startup menu / login screen first)
     print("[2/2] Launching Graphical User Interface...")
     root = tk.Tk()
     SalesManagementApp(root)
-    
-    # Start the Tkinter main event loop
     root.mainloop()
 
 

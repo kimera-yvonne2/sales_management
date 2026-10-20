@@ -1,0 +1,46 @@
+SALES SUMMARY REPORT
+Generated: 2026-10-20 18:53
+================================================================
+
+OVERVIEW
+----------------------------------------------------------------
+Number of sales      : 8
+Total sales revenue  : UGX 395,500
+Average sale value   : UGX 49,438
+Total purchases      : UGX 2,256,000
+Total expenses       : UGX 1,085,000
+Outstanding balances : UGX 24,000 on 1 sale(s)
+
+TOP SELLING PRODUCTS
+----------------------------------------------------------------
+Product           Units  Revenue  
+----------------  -----  ---------
+Coca Cola 500ml   41     82000.00 
+Type-C USB Cable  13     104000.00
+Red Bull 250ml    8      40000.00 
+Geisha Soap 200g  6      21000.00 
+Wheat Flour 1kg   6      33000.00 
+
+SALES BY EMPLOYEE
+----------------------------------------------------------------
+Employee        Sales  Total    
+--------------  -----  ---------
+Grace Namubiru  5      295500.00
+Brian Opio      2      61000.00 
+Diana Atuhaire  1      39000.00 
+
+PAYMENTS BY METHOD
+----------------------------------------------------------------
+Method        Payments  Received 
+------------  --------  ---------
+Cash          5         174500.00
+Mobile Money  3         147000.00
+Card          1         50000.00 
+
+INSIGHTS
+----------------------------------------------------------------
+Best seller by units: Coca Cola 500ml (41 units).
+Top performer: Grace Namubiru with UGX 295,500.
+Most used payment method by value: Cash.
+Revenue minus expenses: UGX -689,500 (before the cost of stock bought).
+Follow up 1 unpaid/part-paid sale(s) worth UGX 24,000.

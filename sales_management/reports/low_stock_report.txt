@@ -1,0 +1,17 @@
+LOW STOCK REPORT
+Generated: 2026-10-20 18:53
+================================================================
+
+Branch            Product           On hand  Reorder level
+----------------  ----------------  -------  -------------
+Main Store        Coca Cola 500ml   14       15           
+Main Store        Type-C USB Cable  7        8            
+Ntinda Branch     Cooking Oil 1L    9        10           
+Ntinda Branch     Red Bull 250ml    4        10           
+Wandegeya Branch  Geisha Soap 200g  14       15           
+
+INSIGHTS
+----------------------------------------------------------------
+5 product line(s) need restocking.
+Most urgent: Red Bull 250ml at Ntinda Branch (4 left, reorder level 10).
+Branch with most low-stock lines: Main Store (2).
