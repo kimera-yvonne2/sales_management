@@ -48,6 +48,16 @@ st.markdown(
       div[data-testid="stDataFrame"] { border: 1px solid #e8edf4; border-radius: 12px; overflow: hidden; }
       [data-testid="stCaptionContainer"] { color: #bac9dc; }
       .caption { color: #bac9dc; }
+      .overview-kicker { color: #8bd4ca; font-size: .76rem; font-weight: 700;
+        letter-spacing: .12em; text-transform: uppercase; margin: .25rem 0 .35rem; }
+      .overview-intro { color: #dce7f5; font-size: 1.05rem; margin: 0 0 1rem; }
+      .overview-section { color: #e8eefb; font-family: 'Manrope', sans-serif;
+        font-size: 1.15rem; font-weight: 700; margin: .2rem 0 .15rem; }
+      .overview-note { color: #bac9dc; font-size: .88rem; margin: 0 0 .8rem; }
+      div[data-testid="stMetric"] { min-height: 112px; }
+      div[data-testid="stMetricLabel"] p { color: #6f829b !important; font-weight: 600; }
+      div[data-testid="stMetricValue"] { color: #213b59 !important; }
+      div[data-testid="stMetricDelta"] { font-size: .78rem; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -178,30 +188,36 @@ def page_overview():
         "(SELECT IFNULL(SUM(total_amount),0) FROM SALE WHERE DATE(sale_date)=CURDATE()) AS today_revenue, "
         "(SELECT COUNT(*) FROM V_LOW_STOCK) AS low_stock"
     )[0]
-    cols = st.columns(5)
-    cols[0].metric("Products", f"{totals['products']:,}")
-    cols[1].metric("Customers", f"{totals['customers']:,}")
-    cols[2].metric("Sales today", f"{totals['today_sales']:,}")
-    cols[3].metric("Today's revenue", money(totals["today_revenue"]))
-    cols[4].metric("Low stock alerts", f"{totals['low_stock']:,}",
+    st.markdown("<div class='overview-kicker'>Business snapshot</div>", unsafe_allow_html=True)
+    st.markdown("<p class='overview-intro'>A quick read on today’s performance and the work that needs attention.</p>", unsafe_allow_html=True)
+    cols = st.columns(5, gap="medium")
+    cols[0].metric("📦 Products", f"{totals['products']:,}", help="Products in the catalogue")
+    cols[1].metric("👥 Customers", f"{totals['customers']:,}", help="Registered customers")
+    cols[2].metric("🧾 Sales today", f"{totals['today_sales']:,}", help="Sales recorded today")
+    cols[3].metric("💰 Revenue today", money(totals["today_revenue"]), help="Sales value recorded today")
+    cols[4].metric("⚠️ Low stock", f"{totals['low_stock']:,}",
                    delta="Needs attention" if totals["low_stock"] else "All clear",
-                   delta_color="inverse" if totals["low_stock"] else "normal")
-    left, right = st.columns([1.35, 1])
+                   delta_color="inverse" if totals["low_stock"] else "normal",
+                   help="Products at or below their reorder level")
+    left, right = st.columns([1.35, 1], gap="large")
     with left:
-        st.subheader("Sales trend")
+        st.markdown("<div class='overview-section'>Sales trend</div><div class='overview-note'>Daily revenue over the last 14 days</div>", unsafe_allow_html=True)
         trend = fetch_all("SELECT DATE(sale_date) AS day, SUM(total_amount) AS revenue "
                           "FROM SALE WHERE sale_date >= DATE_SUB(CURDATE(), INTERVAL 13 DAY) "
                           "GROUP BY DATE(sale_date) ORDER BY day")
-        st.line_chart(frame(trend).set_index("day") if trend else pd.DataFrame(), height=300,
-                      color="#258f88")
+        if trend:
+            chart = frame(trend).set_index("day").rename(columns={"revenue": "Revenue (UGX)"})
+            st.area_chart(chart, height=285, color="#2b9b8f")
+        else:
+            st.info("No sales have been recorded in the last 14 days.")
     with right:
-        st.subheader("Stock needing attention")
+        st.markdown("<div class='overview-section'>Stock needing attention</div><div class='overview-note'>Items at or below their reorder level</div>", unsafe_allow_html=True)
         low = ops.fetch_low_stock_products()
         if low:
-            st.dataframe(frame(low), hide_index=True, use_container_width=True, height=300)
+            st.dataframe(frame(low), hide_index=True, use_container_width=True, height=285)
         else:
-            st.success("All products are above their reorder levels.")
-    st.subheader("Recent sales")
+            st.success("Stock looks healthy. All products are above their reorder levels.")
+    st.markdown("<div class='overview-section'>Recent sales</div><div class='overview-note'>The latest transactions across your branches</div>", unsafe_allow_html=True)
     recent = fetch_all(
         "SELECT s.sale_id AS Sale, s.sale_date AS Date, b.branch_name AS Branch, "
         "CONCAT(e.first_name,' ',e.last_name) AS Employee, s.total_amount AS Total "
@@ -209,7 +225,15 @@ def page_overview():
         "JOIN EMPLOYEE e ON e.employee_id=s.employee_id "
         "ORDER BY s.sale_date DESC LIMIT 10"
     )
-    st.dataframe(frame(recent), hide_index=True, use_container_width=True)
+    if recent:
+        recent_frame = frame(recent)
+        recent_frame["Date"] = pd.to_datetime(recent_frame["Date"]).dt.strftime("%d %b %Y · %H:%M")
+        recent_frame["Total"] = recent_frame["Total"].map(money)
+        st.dataframe(recent_frame, hide_index=True, use_container_width=True,
+                     column_config={"Sale": st.column_config.TextColumn("Sale ID"),
+                                    "Total": st.column_config.TextColumn("Total (UGX)")})
+    else:
+        st.info("No sales have been recorded yet.")
 
 
 def page_sales():
