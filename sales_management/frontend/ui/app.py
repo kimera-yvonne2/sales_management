@@ -1,6 +1,6 @@
 """User Interface module for the Sales Management System (RISMS).
 
-Flow:  Startup menu / login  ->  main window with tabs chosen by the user's role.
+Flow:  Open directly to the main window with all application tabs.
 All data entry is validated here first, then validated again by the backend and
 by the database (constraints and triggers).
 """
@@ -10,8 +10,6 @@ from tkinter import messagebox, ttk
 
 from backend import operations as ops
 from backend import reports
-from backend.auth import authenticate
-from backend.db import get_connection
 from backend.operations import OperationError
 
 BG = "#f4f6f9"
@@ -53,11 +51,18 @@ class SalesManagementApp:
         self.root.minsize(900, 640)
         self.root.config(bg=BG)
 
-        self.user = None
-        self.failed_attempts = 0
+        # Local single-user mode: skip application login and show all tabs.
+        self.user = {
+            "user_id": 0,
+            "username": "local",
+            "role": "Administrator",
+            "employee_id": None,
+            "branch_id": None,
+            "full_name": "Local database access",
+        }
         self.refreshers = []          # functions that reload lists after data changes
         self.notebook = None
-        self.show_startup_menu()
+        self.show_main_window()
 
     # ================================================================ helpers
     def clear_window(self):
@@ -81,9 +86,11 @@ class SalesManagementApp:
         tree = ttk.Treeview(holder, columns=[c[0] for c in columns], show="headings", height=height)
         for key, heading, width, anchor in columns:
             tree.heading(key, text=heading)
-            tree.column(key, width=width, anchor=anchor)
+            tree.column(key, width=width, minwidth=width, stretch=False, anchor=anchor)
         scroll = ttk.Scrollbar(holder, orient="vertical", command=tree.yview)
-        tree.configure(yscrollcommand=scroll.set)
+        xscroll = ttk.Scrollbar(holder, orient="horizontal", command=tree.xview)
+        tree.configure(yscrollcommand=scroll.set, xscrollcommand=xscroll.set)
+        xscroll.pack(side="bottom", fill="x")
         tree.pack(side="left", fill="both", expand=True)
         scroll.pack(side="right", fill="y")
         return holder, tree
@@ -113,78 +120,6 @@ class SalesManagementApp:
         combo.grid(row=row, column=1, sticky="w", pady=5)
         return combo
 
-    # ===================================================== startup / login
-    def show_startup_menu(self):
-        self.clear_window()
-        self.user = None
-        frame = tk.Frame(self.root, bg=BG)
-        frame.place(relx=0.5, rely=0.5, anchor="center")
-
-        tk.Label(frame, text="RISMS", font=("Arial", 32, "bold"), bg=BG, fg=DARK).pack()
-        tk.Label(frame, text="Retail Inventory & Sales Management System",
-                 font=("Arial", 13), bg=BG, fg=GREY).pack(pady=(0, 15))
-
-        self.db_status = tk.Label(frame, text="", font=("Arial", 10), bg=BG)
-        self.db_status.pack(pady=(0, 10))
-
-        form = tk.Frame(frame, bg=BG)
-        form.pack()
-        tk.Label(form, text="Username", bg=BG).grid(row=0, column=0, sticky="w", pady=6)
-        self.username_entry = ttk.Entry(form, width=30)
-        self.username_entry.grid(row=0, column=1, padx=10)
-        tk.Label(form, text="Password", bg=BG).grid(row=1, column=0, sticky="w", pady=6)
-        self.password_entry = ttk.Entry(form, width=30, show="*")
-        self.password_entry.grid(row=1, column=1, padx=10)
-
-        buttons = tk.Frame(frame, bg=BG)
-        buttons.pack(pady=20)
-        tk.Button(buttons, text="Login", width=12, bg=GREEN, fg="white", font=("Arial", 10, "bold"),
-                  command=self.login_action).pack(side="left", padx=6)
-        tk.Button(buttons, text="Exit", width=12, bg=GREY, fg="white", font=("Arial", 10, "bold"),
-                  command=self.root.destroy).pack(side="left", padx=6)
-
-        self.root.bind("<Return>", lambda _e: self.login_action())
-        self.check_database()
-        self.username_entry.focus_set()
-
-    def check_database(self):
-        try:
-            get_connection().close()
-            self.db_status.config(text="Database connected", fg=GREEN)
-        except Exception as exc:                      # pylint: disable=broad-except
-            self.db_status.config(text=f"Database not reachable: {exc}", fg=ORANGE, wraplength=420)
-
-    def login_action(self):
-        username = self.username_entry.get().strip()
-        password = self.password_entry.get()
-        if not username or not password:
-            self.error("Enter both username and password.")
-            return
-        try:
-            user = authenticate(username, password)
-        except Exception as exc:                      # pylint: disable=broad-except
-            self.error(f"Could not reach the database:\n{exc}", "Database Error")
-            return
-
-        if user is None:
-            self.failed_attempts += 1
-            if self.failed_attempts >= 3:
-                messagebox.showerror("Access Locked", "Too many failed attempts. The application will close.")
-                self.root.destroy()
-                return
-            self.password_entry.delete(0, tk.END)
-            self.error("Invalid credentials or inactive account.\n"
-                       f"Attempts left: {3 - self.failed_attempts}", "Login Failed")
-            return
-
-        self.failed_attempts = 0
-        self.user = user
-        self.root.unbind("<Return>")
-        self.show_main_window()
-
-    def logout_action(self):
-        self.show_startup_menu()
-
     # ============================================================ main window
     def show_main_window(self):
         self.clear_window()
@@ -192,7 +127,7 @@ class SalesManagementApp:
         header.pack(fill="x")
         tk.Label(header, text="Retail Sales & Inventory Management", font=("Arial", 14, "bold"),
                  bg=DARK, fg="white").pack(side="left", padx=15, pady=10)
-        tk.Button(header, text="Logout", bg=ORANGE, fg="white", command=self.logout_action
+        tk.Button(header, text="Exit", bg=ORANGE, fg="white", command=self.root.destroy
                   ).pack(side="right", padx=15)
         tk.Label(header, text=f"{self.user['full_name']}  |  {self.user['role']}",
                  bg=DARK, fg="#d8dee9").pack(side="right", padx=10)

@@ -6,7 +6,7 @@ stored in the source code.  Defaults are shown below.
     RISMS_DB_HOST      localhost
     RISMS_DB_PORT      3306
     RISMS_DB_USER      root
-    RISMS_DB_PASSWORD  (empty)
+    RISMS_DB_PASSWORD  kimerayvonne622
     RISMS_DB_NAME      sales_management_db
 """
 
