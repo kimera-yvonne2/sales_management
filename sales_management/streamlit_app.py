@@ -29,15 +29,15 @@ st.markdown(
       html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
       .stApp { background: #263f61; }
       [data-testid="stAppViewContainer"] { background: #263f61; }
-      [data-testid="stMain"] { background: #263f61; color: #dce7f5; }
+      [data-testid="stMain"] { background: #263f61; color: #000000; }
       [data-testid="stSidebar"] { background: #111c35; }
       [data-testid="stSidebar"] * { color: #e8eefb; }
       [data-testid="stSidebar"] [data-testid="stRadio"] label { padding: .45rem .2rem; }
-      h1, h2, h3 { font-family: 'Manrope', sans-serif; color: #dce7f5; }
-      .hero { padding: 1.35rem 1.6rem; border-radius: 18px; color: white;
+      h1, h2, h3 { font-family: 'Manrope', sans-serif; color: #000000; }
+      .hero { padding: 1.35rem 1.6rem; border-radius: 18px; color: black;
         background: linear-gradient(115deg, #172747 0%, #245b72 58%, #2b9b8f 100%);
         margin: .2rem 0 1.2rem 0; box-shadow: 0 12px 28px #1b35551c; }
-      .hero h1 { color: white; margin: 0; font-size: 2rem; }
+      .hero h1 { color: black; margin: 0; font-size: 2rem; }
       .hero p { color: #d5e5ee; margin: .3rem 0 0 0; }
       div[data-testid="stMetric"] { background: white; padding: 1rem 1.1rem;
         border: 1px solid #e8edf4; border-radius: 14px; box-shadow: 0 4px 14px #1b35550a; }
@@ -50,7 +50,7 @@ st.markdown(
       .caption { color: #bac9dc; }
       .overview-kicker { color: #8bd4ca; font-size: .76rem; font-weight: 700;
         letter-spacing: .12em; text-transform: uppercase; margin: .25rem 0 .35rem; }
-      .overview-intro { color: #dce7f5; font-size: 1.05rem; margin: 0 0 1rem; }
+      .overview-intro { color: #000000; font-size: 1.05rem; margin: 0 0 1rem; }
       .overview-section { color: #e8eefb; font-family: 'Manrope', sans-serif;
         font-size: 1.15rem; font-weight: 700; margin: .2rem 0 .15rem; }
       .overview-note { color: #bac9dc; font-size: .88rem; margin: 0 0 .8rem; }

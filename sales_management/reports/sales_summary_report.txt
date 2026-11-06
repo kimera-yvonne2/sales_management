@@ -1,5 +1,5 @@
 SALES SUMMARY REPORT
-Generated: 2026-10-22 11:16
+Generated: 2026-10-29 11:41
 ================================================================
 
 OVERVIEW
@@ -7,7 +7,7 @@ OVERVIEW
 Number of sales      : 8
 Total sales revenue  : UGX 395,500
 Average sale value   : UGX 49,438
-Total purchases      : UGX 2,256,000
+Total purchases      : UGX 2,268,000
 Total expenses       : UGX 1,085,000
 Outstanding balances : UGX 24,000 on 1 sale(s)
 
